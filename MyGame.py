@@ -3,7 +3,14 @@ from random import randint
 from Playing import Player, Obstacle
 py.mixer.init()
 #stone img: https://publicdomainvectors.org/en/free-clipart/Pile-of-rocks/74332.html
-#bg img : https://media.easy-peasy.ai/92095ba3-b100-486f-81bb-376973e32d8c/d204c906-1a2b-4078-8cc5-c5ed74cf48af.png
+#portal img: https://publicdomainvectors.org/en/free-clipart/Pixel-orange-gem/40472.html
+#crystal img: https://publicdomainvectors.org/en/free-clipart/Blue-rock/40875.html
+#bg img : https://media.easy-peasy.ai/92095ba3-b100-486f-81bb-376973e32d8c/d204c906-1a2b-4078-8cc5-c5ed74cf48af.
+#pix1 img: https://publicdomainvectors.org/en/free-clipart/Vector-illustration-of-colorful-blurry-pixel-character/29224.html
+#pix2 img: https://publicdomainvectors.org/en/free-clipart/Colorful-blurry-pixel-kid-vector-drawing/29223.html
+#dig sound: https://minecraft.fandom.com/wiki/Category:Armor_stand_sounds
+#gem sound: https://minecraft.fandom.com/wiki/Category:Firework_sounds
+ 
 #in this script we will generate n x n grid on the screen
 #our player can only move within these cells in the grid
 cell_w, cell_h = 60, 60
@@ -20,7 +27,7 @@ py.init()
 screen = py.display.set_mode((screen_w + panel_w,screen_h))
 py.display.set_caption("Generating random grid")
 
-char = py.image.load("C:\\CSprojectDungeonCrawler\\char.svg")
+char = py.image.load("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\char.svg")
 char = py.transform.scale(char, (60, 60))
 stones = py.image.load("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\stones.svg")
 stones = py.transform.scale(stones, (60, 60))
@@ -30,6 +37,8 @@ gems = py.image.load("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodP
 gems = py.transform.scale(gems, (60, 60))
 portal = py.image.load("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\Orange-Gem.svg")
 portal = py.transform.scale(portal, (60, 60))
+dirt = py.image.load("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\dirt.svg")
+dirt = py.transform.scale(dirt, (60, 60))
 dig = py.mixer.Sound("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\Firework_blast.ogg")
 gem_sound = py.mixer.Sound("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\Armor_Stand_break1.ogg")
 
@@ -99,6 +108,9 @@ def drawGrid(grid:list[list], obstacleList):
 
             elif grid[r][c] == 5:
                 screen.blit(portal, (c*cell_w, r*cell_h))
+            
+            elif grid[r][c] == 7:
+                screen.blit(dirt, (c*cell_w, r*cell_h))
             
             '''
             if grid[r][c] == 2:

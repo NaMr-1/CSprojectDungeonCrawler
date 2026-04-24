@@ -69,16 +69,16 @@ class Player:
         c = self.x // 60
         if event.type == py.KEYDOWN:
             if event.key == py.K_a and c - 1 >= 0 and grid[r][c-1] == 0:
-                grid[r][c-1] = 1
+                grid[r][c-1] = 7
                 Player.dig.play()
             elif event.key == py.K_d and c + 1 < len(grid[0]) and grid[r][c+1] == 0:
-                grid[r][c+1] = 1
+                grid[r][c+1] = 7
                 Player.dig.play()
             elif event.key == py.K_w and r - 1 >= 0 and grid[r-1][c] == 0:
-                grid[r-1][c] = 1
+                grid[r-1][c] = 7
                 Player.dig.play()
             elif event.key == py.K_s and r + 1 < len(grid) and grid[r+1][c] == 0:
-                grid[r+1][c] = 1
+                grid[r+1][c] = 7
                 
                 Player.dig.play()
         return grid
