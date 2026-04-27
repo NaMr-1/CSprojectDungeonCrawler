@@ -23,9 +23,10 @@ minus = 0
 gems_all = 0
 gem_total = 0
 mining = False
+index = 0
 
 
-#generating ranodm value of 0 and 1 in the grid list
+#generating random value of 0 and 1 in the grid list
 #which decides where we draw obstacles
 #we choose our probabilities to be 80 - 20 against obstacle.
 clock = py.time.Clock()
@@ -37,8 +38,14 @@ char = py.image.load("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodP
 char = py.transform.scale(char, (60, 60))
 stones = py.image.load("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\stones.svg")
 stones = py.transform.scale(stones, (60, 60))
-bg = py.image.load("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\bg.png")
-bg = py.transform.scale(bg, (screen_w, screen_h))
+zero = py.image.load("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\bg.png")
+zero = py.transform.scale(zero, (screen_w, screen_h))
+one = py.image.load("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\bg.png")
+one = py.transform.scale(zero, (screen_w, screen_h))
+two = py.image.load("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\bg.png")
+two = py.transform.scale(zero, (screen_w, screen_h))
+three =  py.image.load("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\bg.png")
+three = py.transform.scale(zero, (screen_w, screen_h))
 gems = py.image.load("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\Crystal.svg")
 gems = py.transform.scale(gems, (60, 60))
 portal = py.image.load("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\Orange-Gem.svg")
@@ -49,6 +56,8 @@ dig = py.mixer.Sound("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodP
 gem_sound = py.mixer.Sound("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\Armor_Stand_break1.ogg")
 
 p1 = Player(0, 0, 60, 60, char)
+
+bgList = [zero, one, two, three]
 
 def gridChange():
     grid = [[randint(0, 4) for _ in range(col)] for _ in range(row)]
@@ -157,7 +166,7 @@ def check(sixes):
 
 
 
-def portalCheck(portal_passes, grid, obstacleList):
+def portalCheck(portal_passes, grid, obstacleList, index):
     r = p1.y // cell_h
     c = p1.x // cell_w
 
@@ -165,8 +174,11 @@ def portalCheck(portal_passes, grid, obstacleList):
         if event.key == py.K_SPACE and grid[r][c] == 5:
             grid, obstacleList = gridChange()
             portal_passes += 1
+            index += 1
+            if index > 3:
+                index -= 4
 
-    return portal_passes, grid, obstacleList
+    return portal_passes, grid, obstacleList, index
 
 def digging(mining, digs, minus):
     if mining == True:
@@ -186,23 +198,24 @@ while run:
         if event.type == py.QUIT:
             run = False
         p1.move(screen, grid, event)
-        p1.mine(screen, grid, event)
+        p1.mine(screen, grid, event, mining)
         mining = p1.mine(screen, grid, event, mining)
         gem = find(gem, gems_all)
         sixes = sixIs(sixes)
         check(sixes)
-        portal_passes, grid, obstacleList = portalCheck(portal_passes, grid, obstacleList)
+        portal_passes, grid, obstacleList, index = portalCheck(portal_passes, grid, obstacleList, index)
         grid = p1.mine(screen, grid, event, mining)
-        digs = digging(digs, minus)
-        minus = digging(digs, minus)
+        digs = digging(mining, digs, minus)
+        minus = digging(mining, digs, minus)
         gem_total = gem - minus
         gems_all = find(gem, gems_all)
+        mining = digging(mining, digs, minus)
 
     #we will need to change the frame rate for this program
     clock.tick(15)
     #clean the previous history of the screen
     # screen.fill("#ffffff")
-    screen.blit(bg, (0,0))
+    screen.blit(bgList[index], (0,0))
     #first draw the grid
     drawGrid(grid, obstacleList)
     draw_panel(screen, gem, portal_passes, digs)
