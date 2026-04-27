@@ -18,6 +18,12 @@ row, col = 9, 9
 screen_w, screen_h = col * cell_w, row*cell_h
 panel_w = 3*cell_w
 sixes = 0
+digs = 0
+minus = 0
+gems_all = 0
+gem_total = 0
+mining = False
+
 
 #generating ranodm value of 0 and 1 in the grid list
 #which decides where we draw obstacles
@@ -85,6 +91,7 @@ for r in range(row):
             coinList.append(Coin(c*cell_w, r*cell_h, money))
 '''
 
+
 #set the speedX and speedY to the cell width and cell height so that
 #the player moves exactly as the amount of a cell
 #Player.speedX = cell_w
@@ -120,29 +127,34 @@ def drawGrid(grid:list[list], obstacleList):
             
 gem = 0
 portal_passes = 0
-def draw_panel(screen, gem, portal_passes):
+def draw_panel(screen, gem_total, portal_passes, digs):
     font = py.font.SysFont(None, 30)
     py.draw.rect(screen, "#333333", (screen_w, 0, panel_w, screen_h))
-    textSurface1 = font.render(f"Coins: {gem}", True, "#cccccc")
+    textSurface1 = font.render(f"Coins: {gem_total}", True, "#cccccc")
     textSurface2 = font.render(f"Portals: {portal_passes}", True, "#cccccc")
+    textSurface3 = font.render(f"Digs: {digs}", True, "#cccccc")
     screen.blit(textSurface1, (screen_w + 20, 40))
     screen.blit(textSurface2, (screen_w + 20, 65))
+    screen.blit(textSurface3, (screen_w + 20, 90))
 
-def find(gem):
+def find(gem, gems_all):
     r = p1.y // 60
     c = p1.x // 60
     if event.type == py.KEYDOWN:
         if event.key == py.K_SPACE and grid[r][c] == 6:
             gem += 1
+            gems_all += 1
             grid[r][c] = 3
             gem_sound.play()
     return gem
+    return gems_all
 
 
 
 def check(sixes):
     if sixes == 0:
         grid[0][0] = 5
+
 
 
 def portalCheck(portal_passes, grid, obstacleList):
@@ -156,6 +168,16 @@ def portalCheck(portal_passes, grid, obstacleList):
 
     return portal_passes, grid, obstacleList
 
+def digging(mining, digs, minus):
+    if mining == True:
+        digs += 1
+        minus += 2
+        mining = False
+    return digs
+    return minus
+    return mining
+
+
             
             
 run = True
@@ -164,11 +186,18 @@ while run:
         if event.type == py.QUIT:
             run = False
         p1.move(screen, grid, event)
-        gem = find(gem)
+        p1.mine(screen, grid, event)
+        mining = p1.mine(screen, grid, event, mining)
+        gem = find(gem, gems_all)
         sixes = sixIs(sixes)
         check(sixes)
         portal_passes, grid, obstacleList = portalCheck(portal_passes, grid, obstacleList)
-        grid = p1.mine(screen, grid, event)
+        grid = p1.mine(screen, grid, event, mining)
+        digs = digging(digs, minus)
+        minus = digging(digs, minus)
+        gem_total = gem - minus
+        gems_all = find(gem, gems_all)
+
     #we will need to change the frame rate for this program
     clock.tick(15)
     #clean the previous history of the screen
@@ -176,7 +205,7 @@ while run:
     screen.blit(bg, (0,0))
     #first draw the grid
     drawGrid(grid, obstacleList)
-    draw_panel(screen, gem, portal_passes)
+    draw_panel(screen, gem, portal_passes, digs)
     #then draw the player
     p1.draw(screen)
     #then move the player

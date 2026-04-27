@@ -64,7 +64,7 @@ class Player:
         self.rect = (self.x, self.y, self.w, self.h)
         '''
         
-    def mine(self, screen, grid, event):
+    def mine(self, screen, grid, event, mining):
         r = self.y // 60
         c = self.x // 60
         if event.type == py.KEYDOWN:
@@ -79,9 +79,11 @@ class Player:
                 Player.dig.play()
             elif event.key == py.K_s and r + 1 < len(grid) and grid[r+1][c] == 0:
                 grid[r+1][c] = 7
-                
                 Player.dig.play()
+        mining = True
         return grid
+        return mining
+
 
     def collision(self,enemy):
         #enemy is also a player object
