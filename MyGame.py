@@ -17,6 +17,7 @@ cell_w, cell_h = 60, 60
 row, col = 9, 9
 screen_w, screen_h = col * cell_w, row*cell_h
 panel_w = 3*cell_w
+total_w = screen_w + panel_w
 sixes = 0
 digs = 0
 minus = 0
@@ -31,7 +32,7 @@ index = 0
 clock = py.time.Clock()
 py.init()
 screen = py.display.set_mode((screen_w + panel_w,screen_h))
-py.display.set_caption("Generating random grid")
+py.display.set_caption("Dungeon Crawler")
 
 green = py.image.load("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\char.svg")
 green = py.transform.scale(green, (60, 60))
@@ -151,6 +152,30 @@ def drawGrid(grid:list[list], obstacleList):
                 index_coin += 1
             '''
             
+def drawInstructions(screen):
+    sans_font = py.font.SysFont("dejavusans", 30)
+    moveText = sans_font.render(f"Move around using ARROWS", True, "#cccccc")
+    crystalsText = sans_font.render(f"Collect crystals by clicking SPACE", True, "#cccccc")
+    portalText = sans_font.render(f"Go through portals using SPACE", True, "#cccccc")
+    interactText = sans_font.render(f"Interact with obstacles using WASD", True, "#cccccc")
+    charText = sans_font.render(f"Change the character to: green using Y; blue using U; red using I", True, "#cccccc")
+
+    screen.blit(moveText, (70, 50))
+    screen.blit(crystalsText, (60, 70))
+    screen.blit(portalText, (60, 90))
+    screen.blit(interactText, (60, 110))
+    screen.blit(charText, (40, 130))
+
+
+def drawTitleScreen(screen):
+    py.draw.rect(screen, "#222255", (0, 0, total_w, screen_h))
+    sans_font = py.font.SysFont("dejavusans", 30)
+    titleText = sans_font.render(f"Dungeon Crawler", True, "#cccccc")
+    contText = sans_font.render(f"To continue, press ENTER", True, "#cccccc")
+
+    screen.blit(titleText, (100, 100))
+    screen.blit(contText, (95, 200))
+
 
 portal_passes = 0
 def draw_panel(screen, gem_total, portal_passes, digs):
@@ -205,7 +230,35 @@ def gemCount(gems_all, minus, gem_total):
     return gem_total
             
             
-run = True
+start = True
+intro = False
+run = False
+
+while start:
+    for event in py.event.get():
+        if event.type == py.QUIT:
+            start = False
+        if event.type == py.KEYDOWN:
+            if event.key == py.K_RETURN:
+                start = False
+                intro = True
+    drawTitleScreen(screen)
+    py.display.flip()
+
+
+while intro:
+    for event in py.event.get():
+        if event.type == py.QUIT:
+            intro = False
+        if event.type == py.KEYDOWN:
+            if event.key == py.K_RETURN:
+                intro = False
+                run = True
+
+    drawInstructions(screen)
+    py.display.flip()
+
+
 while run:
     for event in py.event.get():
         if event.type == py.QUIT:
