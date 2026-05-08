@@ -36,9 +36,9 @@ py.display.set_caption("Dungeon Crawler")
 
 green = py.image.load("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\char.svg")
 green = py.transform.scale(green, (60, 60))
-blue = py.image.load("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\Pix1.svg")
+blue = py.image.load("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\Pix2.svg")
 blue = py.transform.scale(blue, (60, 60))
-red = py.image.load("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\Pix2.svg")
+red = py.image.load("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\Pix1.svg")
 red = py.transform.scale(red, (60, 60))
 stones = py.image.load("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\stones.svg")
 stones = py.transform.scale(stones, (60, 60))
@@ -153,18 +153,25 @@ def drawGrid(grid:list[list], obstacleList):
             '''
             
 def drawInstructions(screen):
-    sans_font = py.font.SysFont("dejavusans", 30)
+    py.draw.rect(screen, "#222255", (0, 0, total_w, screen_h))
+    sans_font = py.font.SysFont("dejavusans", 20)
     moveText = sans_font.render(f"Move around using ARROWS", True, "#cccccc")
     crystalsText = sans_font.render(f"Collect crystals by clicking SPACE", True, "#cccccc")
     portalText = sans_font.render(f"Go through portals using SPACE", True, "#cccccc")
     interactText = sans_font.render(f"Interact with obstacles using WASD", True, "#cccccc")
-    charText = sans_font.render(f"Change the character to: green using Y; blue using U; red using I", True, "#cccccc")
-
-    screen.blit(moveText, (70, 50))
-    screen.blit(crystalsText, (60, 70))
-    screen.blit(portalText, (60, 90))
-    screen.blit(interactText, (60, 110))
-    screen.blit(charText, (40, 130))
+    charText = sans_font.render(f"Change the character to:", True, "#cccccc")
+    greenText = sans_font.render(f"green using Y", True, "#cccccc")
+    blueText = sans_font.render(f"blue using U", True, "#cccccc")
+    redText = sans_font.render(f"red using I", True, "#cccccc")
+    
+    screen.blit(moveText, (60, 50))
+    screen.blit(crystalsText, (50, 80))
+    screen.blit(portalText, (50, 110))
+    screen.blit(interactText, (50, 140))
+    screen.blit(charText, (50, 170))
+    screen.blit(greenText, (70, 200))
+    screen.blit(blueText, (70, 230))
+    screen.blit(redText, (70, 260))
 
 
 def drawTitleScreen(screen):
@@ -173,8 +180,22 @@ def drawTitleScreen(screen):
     titleText = sans_font.render(f"Dungeon Crawler", True, "#cccccc")
     contText = sans_font.render(f"To continue, press ENTER", True, "#cccccc")
 
-    screen.blit(titleText, (100, 100))
-    screen.blit(contText, (95, 200))
+    screen.blit(titleText, (170, 100))
+    screen.blit(contText, (160, 200))
+
+def drawEndScreen(screen, gem_total, jumps):
+    py.draw.rect(screen, "#222255", (0, 0, total_w, screen_h))
+    sans_font = py.font.SysFont("dejavusans", 30)
+    endText = sans_font.render(f"The End", True, "#cccccc")
+    gemText = sans_font.render(f"You collected {gem_total} crystals", True, "#cccccc")
+    jumpText = sans_font.render(f"You jumped {jumps} times", True, "#cccccc")
+    scoreText = sans_font.render(f"Your total score is: {gem_total - jumps}", True, "#cccccc")
+
+
+    screen.blit(endText, (170, 90))
+    screen.blit(gemText, (140, 130))
+    screen.blit(jumpText, (140, 170))
+    screen.blit(scoreText, (120, 210))
 
 
 portal_passes = 0
@@ -233,6 +254,7 @@ def gemCount(gems_all, minus, gem_total):
 start = True
 intro = False
 run = False
+ending = False
 
 while start:
     for event in py.event.get():
@@ -292,5 +314,19 @@ while run:
     #for enemy in obstacleList:
         #p1.collision(enemy)
     #update the sreen
+    py.display.flip()
+
+    if portal_passes == 5:
+        run = False
+        ending = True
+
+while ending:
+    for event in py.event.get():
+        if event.type == py.QUIT:
+            ending = False
+        if event.type == py.KEYDOWN:
+            if event.key == py.K_RETURN:
+                ending = False
+    drawEndScreen(screen, gem_total, digs)
     py.display.flip()
 py.quit()
