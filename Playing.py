@@ -64,25 +64,25 @@ class Player:
         self.rect = (self.x, self.y, self.w, self.h)
         '''
         
-    def mine(self, screen, grid, event):
+    def mine(self, screen, grid, event, mined):
         r = self.y // 60
         c = self.x // 60
         mined = False
         if event.type == py.KEYDOWN:
             if event.key == py.K_a and grid[r][c-1] == 0:
-                grid[r][c-1] = 7
+                grid[r][c-1] = 10
                 Player.dig.play()
                 mined = True
             elif event.key == py.K_d and grid[r][c+1] == 0:
-                grid[r][c+1] = 7
+                grid[r][c+1] = 10
                 Player.dig.play()
                 mined = True
             elif event.key == py.K_w and grid[r-1][c] == 0:
-                grid[r-1][c] = 7
+                grid[r-1][c] = 10
                 Player.dig.play()
                 mined = True
             elif event.key == py.K_s and grid[r+1][c] == 0:
-                grid[r+1][c] = 7
+                grid[r+1][c] = 10
                 Player.dig.play()
                 mined = True
         return grid, mined

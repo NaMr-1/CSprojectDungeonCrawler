@@ -10,6 +10,7 @@ py.mixer.init()
 #pix2 img: https://publicdomainvectors.org/en/free-clipart/Colorful-blurry-pixel-kid-vector-drawing/29223.html
 #dig sound: https://minecraft.fandom.com/wiki/Category:Armor_stand_sounds
 #gem sound: https://minecraft.fandom.com/wiki/Category:Firework_sounds
+#portal sound: https://minecraft.fandom.com/wiki/Category:Boat_sounds
  
 #in this script we will generate n x n grid on the screen
 #our player can only move within these cells in the grid
@@ -18,13 +19,16 @@ row, col = 9, 9
 screen_w, screen_h = col * cell_w, row*cell_h
 panel_w = 3*cell_w
 total_w = screen_w + panel_w
-sixes = 0
+nines = 0
 digs = 0
 minus = 0
 gems_all = 0
 gem_total = 0
 index = 0
+puddle_on = 0
+lake_on = 0
 
+mined = False
 
 #generating random value of 0 and 1 in the grid list
 #which decides where we draw obstacles
@@ -56,8 +60,15 @@ portal = py.image.load("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\ko
 portal = py.transform.scale(portal, (60, 60))
 dirt = py.image.load("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\dirt.svg")
 dirt = py.transform.scale(dirt, (60, 60))
+puddle = py.image.load("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\fisherman.svg")
+puddle = py.transform.scale(puddle, (60, 60))
+water = py.image.load("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\Water.svg")
+water = py.transform.scale(water, (60, 60))
 dig = py.mixer.Sound("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\Firework_blast.ogg")
 gem_sound = py.mixer.Sound("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\Armor_Stand_break1.ogg")
+portal_sound = py.mixer.Sound("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\Boat_paddle_water3.ogg")
+bg_sound = py.mixer.Sound("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\13.ogg")
+
 
 charIndex = 0
 charList = [green, blue, red]
@@ -78,10 +89,10 @@ def characterChoose(event, charIndex):
     return charIndex
 
 def gridChange():
-    grid = [[randint(0, 4) for _ in range(col)] for _ in range(row)]
+    grid = [[randint(0, 7) for _ in range(col)] for _ in range(row)]
 
     # ensure starting area is free
-    grid[0][0], grid[0][1], grid[1][0] = 1, 1, 1
+    grid[0][0], grid[0][1], grid[1][0], grid[8][8]= 1, 1, 1, 13
 
     obstacleList = []
     for r in range(row):
@@ -89,27 +100,20 @@ def gridChange():
             if grid[r][c] == 0:
                 obstacleList.append(Obstacle(c * cell_w, r * cell_h, stones))
             elif grid[r][c] == 3:
-                grid[r][c] = 6
-
+                grid[r][c] = 9
+            elif grid[r][c] == 4:
+                grid[r][c] = 11
     return grid, obstacleList
 
 grid, obstacleList = gridChange()
-
-
-for r in range(row):
-    for c in range(col):
-        if grid[r][c] == 0:
-            obstacleList.append(Obstacle(c*cell_w, r*cell_h, stones))#we append the obstacles based on grid
-        elif grid[r][c] == 3:
-            grid[r][c] = 6
             
-def sixIs(sixes):
-    sixes = 0
+def nineIs(nines):
+    nines = 0
     for r in range(row):
         for c in range(col):
-            if grid[r][c] == 6:
-                sixes += 1
-    return sixes
+            if grid[r][c] == 9:
+                nines += 1
+    return nines
 '''
 coinList = []
 for r in range(row):
@@ -137,14 +141,20 @@ def drawGrid(grid:list[list], obstacleList):
                 obstacleList[index_obstacle].draw(screen)
                 index_obstacle += 1
             
-            elif grid[r][c] == 6:
+            elif grid[r][c] == 9:
                 screen.blit(gems, (c*cell_w, r*cell_h))
 
-            elif grid[r][c] == 5:
+            elif grid[r][c] == 8:
                 screen.blit(portal, (c*cell_w, r*cell_h))
             
-            elif grid[r][c] == 7:
+            elif grid[r][c] == 10:
                 screen.blit(dirt, (c*cell_w, r*cell_h))
+
+            elif grid[r][c] == 11:
+                screen.blit(puddle, (c*cell_w, r*cell_h))
+
+            elif grid[r][c] == 13:
+                screen.blit(water, (c*cell_w, r*cell_h))
             
             '''
             if grid[r][c] == 2:
@@ -183,13 +193,13 @@ def drawTitleScreen(screen):
     screen.blit(titleText, (170, 100))
     screen.blit(contText, (160, 200))
 
-def drawEndScreen(screen, gem_total, jumps):
+def drawEndScreen(screen, gem_total, digs):
     py.draw.rect(screen, "#222255", (0, 0, total_w, screen_h))
     sans_font = py.font.SysFont("dejavusans", 30)
     endText = sans_font.render(f"The End", True, "#cccccc")
     gemText = sans_font.render(f"You collected {gem_total} crystals", True, "#cccccc")
-    jumpText = sans_font.render(f"You jumped {jumps} times", True, "#cccccc")
-    scoreText = sans_font.render(f"Your total score is: {gem_total - jumps}", True, "#cccccc")
+    jumpText = sans_font.render(f"You jumped {digs} times", True, "#cccccc")
+    scoreText = sans_font.render(f"Your total score is: {gem_total - digs}", True, "#cccccc")
 
 
     screen.blit(endText, (170, 90))
@@ -204,7 +214,7 @@ def draw_panel(screen, gem_total, portal_passes, digs):
     py.draw.rect(screen, "#333333", (screen_w, 0, panel_w, screen_h))
     textSurface1 = font.render(f"Gems: {gem_total}", True, "#cccccc")
     textSurface2 = font.render(f"Portals: {portal_passes}", True, "#cccccc")
-    textSurface3 = font.render(f"Digs: {digs}", True, "#cccccc")
+    textSurface3 = font.render(f"Water: {puddle_on}/5", True, "#cccccc")
     screen.blit(textSurface1, (screen_w + 20, 40))
     screen.blit(textSurface2, (screen_w + 20, 65))
     screen.blit(textSurface3, (screen_w + 20, 90))
@@ -213,22 +223,43 @@ def find(event, gems_all):
     r = p1.y // 60
     c = p1.x // 60
     if event.type == py.KEYDOWN:
-        if event.key == py.K_SPACE and grid[r][c] == 6:
+        if event.key == py.K_SPACE and grid[r][c] == 9:
             gems_all += 1
             grid[r][c] = 3
             gem_sound.play()
     return gems_all
 
+def get_puddle(event, puddle_on):
+    r = p1.y // 60
+    c = p1.x // 60
+    if event.type == py.KEYDOWN:
+        if event.key == py.K_SPACE and grid[r][c] == 11 and puddle_on < 5:
+            puddle_on += 1
+            grid[r][c] = 4
+            gem_sound.play()
+    return puddle_on
+
+def water_return(event, puddle_on, lake_on):
+    r = p1.y // 60
+    c = p1.x // 60
+    if event.type == py.KEYDOWN:
+        if event.key == py.K_SPACE and grid[r][c] == 13:
+            lake_on += puddle_on
+            puddle_on = 0
+            gem_sound.play()
+    return puddle_on, lake_on
+
 def digging(mined, digs, minus):
     if mined == True:
         digs += 1
         minus += 2
+        mined = False
     return digs, minus
 
 
-def check(sixes):
-    if sixes == 0:
-        grid[0][0] = 5
+def check(nines):
+    if nines == 0:
+        grid[0][0] = 8
 
 
 
@@ -237,7 +268,8 @@ def portalCheck(event, portal_passes, grid, obstacleList, index):
     c = p1.x // cell_w
 
     if event.type == py.KEYDOWN:
-        if event.key == py.K_SPACE and grid[r][c] == 5:
+        if event.key == py.K_SPACE and grid[r][c] == 8:
+            portal_sound.play()
             grid, obstacleList = gridChange()
             portal_passes += 1
             index += 1
@@ -286,14 +318,16 @@ while run:
         if event.type == py.QUIT:
             run = False
         p1.move(screen, grid, event)
-        p1.mine(screen, grid, event)
-        digs, minus = digging(event, digs, minus)
-        sixes = sixIs(sixes)
-        check(sixes)
+        p1.mine(screen, grid, event, mined)
+        digs, minus = digging(mined, digs, minus)
+        nines = nineIs(nines)
+        check(nines)
         portal_passes, grid, obstacleList, index = portalCheck(event, portal_passes, grid, obstacleList, index)
-        grid, mined = p1.mine(screen, grid, event)
+        grid, mined = p1.mine(screen, grid, event, mined)
         gem_total = gemCount(gems_all, minus, gem_total)
         gems_all = find(event, gems_all)
+        puddle_on = get_puddle(event, puddle_on)
+        puddle_on, lake_on = water_return(event, puddle_on, lake_on)
         charIndex = characterChoose(event, charIndex)
         char = charList[charIndex]
         p1.img = char
@@ -307,6 +341,7 @@ while run:
     #first draw the grid
     drawGrid(grid, obstacleList)
     draw_panel(screen, gem_total, portal_passes, digs)
+    bg_sound.play()
     #then draw the player
     p1.draw(screen)
     #then move the player
