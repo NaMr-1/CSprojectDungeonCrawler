@@ -5,7 +5,8 @@ py.mixer.init()
 #stone img: https://publicdomainvectors.org/en/free-clipart/Pile-of-rocks/74332.html
 #portal img: https://publicdomainvectors.org/en/free-clipart/Pixel-orange-gem/40472.html
 #crystal img: https://publicdomainvectors.org/en/free-clipart/Blue-rock/40875.html
-#bg img : https://media.easy-peasy.ai/92095ba3-b100-486f-81bb-376973e32d8c/d204c906-1a2b-4078-8cc5-c5ed74cf48af.
+#bg1 img : https://media.easy-peasy.ai/92095ba3-b100-486f-81bb-376973e32d8c/d204c906-1a2b-4078-8cc5-c5ed74cf48af.
+#bg2 img: 
 #pix1 img: https://publicdomainvectors.org/en/free-clipart/Vector-illustration-of-colorful-blurry-pixel-character/29224.html
 #pix2 img: https://publicdomainvectors.org/en/free-clipart/Colorful-blurry-pixel-kid-vector-drawing/29223.html
 #dig sound: https://minecraft.fandom.com/wiki/Category:Armor_stand_sounds
@@ -25,8 +26,13 @@ minus = 0
 gems_all = 0
 gem_total = 0
 index = 0
-puddle_on = 0
-lake_on = 0
+answer_on = 0
+question_on = 0
+user_text = ""
+n = 0
+
+questionList = ["How many planets are there in our solar system?", "Hom many days does a week have?"]
+answerList = ["8", "7"]
 
 mined = False
 
@@ -60,14 +66,12 @@ portal = py.image.load("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\ko
 portal = py.transform.scale(portal, (60, 60))
 dirt = py.image.load("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\dirt.svg")
 dirt = py.transform.scale(dirt, (60, 60))
-puddle = py.image.load("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\fisherman.svg")
-puddle = py.transform.scale(puddle, (60, 60))
-water = py.image.load("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\Water.svg")
-water = py.transform.scale(water, (60, 60))
+laptop = py.image.load("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\Laptop.svg")
+laptop = py.transform.scale(laptop, (60, 60))
 dig = py.mixer.Sound("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\Firework_blast.ogg")
 gem_sound = py.mixer.Sound("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\Armor_Stand_break1.ogg")
 portal_sound = py.mixer.Sound("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\Boat_paddle_water3.ogg")
-bg_sound = py.mixer.Sound("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\13.ogg")
+bg_sound = py.mixer.Sound("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\13.oga")
 
 
 charIndex = 0
@@ -151,10 +155,7 @@ def drawGrid(grid:list[list], obstacleList):
                 screen.blit(dirt, (c*cell_w, r*cell_h))
 
             elif grid[r][c] == 11:
-                screen.blit(puddle, (c*cell_w, r*cell_h))
-
-            elif grid[r][c] == 13:
-                screen.blit(water, (c*cell_w, r*cell_h))
+                screen.blit(laptop, (c*cell_w, r*cell_h))
             
             '''
             if grid[r][c] == 2:
@@ -193,19 +194,39 @@ def drawTitleScreen(screen):
     screen.blit(titleText, (170, 100))
     screen.blit(contText, (160, 200))
 
-def drawEndScreen(screen, gem_total, digs):
+def drawEndScreen(screen, gem_total, question_on):
     py.draw.rect(screen, "#222255", (0, 0, total_w, screen_h))
     sans_font = py.font.SysFont("dejavusans", 30)
     endText = sans_font.render(f"The End", True, "#cccccc")
     gemText = sans_font.render(f"You collected {gem_total} crystals", True, "#cccccc")
-    jumpText = sans_font.render(f"You jumped {digs} times", True, "#cccccc")
-    scoreText = sans_font.render(f"Your total score is: {gem_total - digs}", True, "#cccccc")
+    jumpText = sans_font.render(f"You answered {question_on} questions correctly", True, "#cccccc")
+    scoreText = sans_font.render(f"Your total score is: {gem_total + question_on}", True, "#cccccc")
 
 
     screen.blit(endText, (170, 90))
     screen.blit(gemText, (140, 130))
     screen.blit(jumpText, (140, 170))
     screen.blit(scoreText, (120, 210))
+
+def drawQuestionScreen(screencreen, questionList, event):
+    py.draw.rect(screen, "#222255", (total_w, 0, 360, 360))
+    sans_font = py.font.SysFont("dejavusans", 20)
+    n = randint(0, len(questionList)-1)
+    questionText = sans_font.render(f"{questionList[n]}", True, "#cccccc")
+    user_text = ""
+    for event in py.event.get():
+        if event.type == py.KEYDOWN:
+            if event.key == py.K_BACKSPACE:
+                user_text = user_text[:-1]
+            else:
+                user_text += event.unicode
+    submitAnsText = sans_font.render(f"Answer submitted: {user_text}", True, "#cccccc")
+    for event in py.event.get():
+        if event.type == py.KEYDOWN:
+            if event.key == py.K_RETURN:
+                screen.blit(submitAnsText, (35, 10))
+    screen.blit(questionText, (10, 10))
+    return user_text, n
 
 
 portal_passes = 0
@@ -214,10 +235,8 @@ def draw_panel(screen, gem_total, portal_passes, digs):
     py.draw.rect(screen, "#333333", (screen_w, 0, panel_w, screen_h))
     textSurface1 = font.render(f"Gems: {gem_total}", True, "#cccccc")
     textSurface2 = font.render(f"Portals: {portal_passes}", True, "#cccccc")
-    textSurface3 = font.render(f"Water: {puddle_on}/5", True, "#cccccc")
     screen.blit(textSurface1, (screen_w + 20, 40))
     screen.blit(textSurface2, (screen_w + 20, 65))
-    screen.blit(textSurface3, (screen_w + 20, 90))
 
 def find(event, gems_all):
     r = p1.y // 60
@@ -229,25 +248,19 @@ def find(event, gems_all):
             gem_sound.play()
     return gems_all
 
-def get_puddle(event, puddle_on):
+def get_question(event, answerList, answer_on, user_text, n):
     r = p1.y // 60
     c = p1.x // 60
     if event.type == py.KEYDOWN:
-        if event.key == py.K_SPACE and grid[r][c] == 11 and puddle_on < 5:
-            puddle_on += 1
-            grid[r][c] = 4
-            gem_sound.play()
-    return puddle_on
+        if event.key == py.K_SPACE and grid[r][c] == 11:
+            drawQuestionScreen(screen, questionList, event)
+            user_text, n = drawQuestionScreen(screen, questionList, event)
+            if user_text == answerList[n]:
+                grid[r][c] = 4
+                gem_sound.play()
+                answer_on += 1
+    return answer_on
 
-def water_return(event, puddle_on, lake_on):
-    r = p1.y // 60
-    c = p1.x // 60
-    if event.type == py.KEYDOWN:
-        if event.key == py.K_SPACE and grid[r][c] == 13:
-            lake_on += puddle_on
-            puddle_on = 0
-            gem_sound.play()
-    return puddle_on, lake_on
 
 def digging(mined, digs, minus):
     if mined == True:
@@ -257,13 +270,13 @@ def digging(mined, digs, minus):
     return digs, minus
 
 
-def check(nines):
-    if nines == 0:
+def check(nines, answer_on):
+    if nines == 0 and answer_on > 0:
         grid[0][0] = 8
 
 
 
-def portalCheck(event, portal_passes, grid, obstacleList, index):
+def portalCheck(event, portal_passes, grid, obstacleList, index, answer_on, question_on):
     r = p1.y // cell_h
     c = p1.x // cell_w
 
@@ -271,12 +284,14 @@ def portalCheck(event, portal_passes, grid, obstacleList, index):
         if event.key == py.K_SPACE and grid[r][c] == 8:
             portal_sound.play()
             grid, obstacleList = gridChange()
+            question_on += answer_on
+            answer_on = 0
             portal_passes += 1
             index += 1
             if index > 3:
                 index -= 4
 
-    return portal_passes, grid, obstacleList, index
+    return portal_passes, grid, obstacleList, index, answer_on, question_on
 
 def gemCount(gems_all, minus, gem_total):
     gem_total = gems_all - minus
@@ -321,13 +336,12 @@ while run:
         p1.mine(screen, grid, event, mined)
         digs, minus = digging(mined, digs, minus)
         nines = nineIs(nines)
-        check(nines)
-        portal_passes, grid, obstacleList, index = portalCheck(event, portal_passes, grid, obstacleList, index)
+        check(nines, answer_on)
+        portal_passes, grid, obstacleList, index, answer_on, question_on = portalCheck(event, portal_passes, grid, obstacleList, index ,answer_on, question_on)
         grid, mined = p1.mine(screen, grid, event, mined)
         gem_total = gemCount(gems_all, minus, gem_total)
         gems_all = find(event, gems_all)
-        puddle_on = get_puddle(event, puddle_on)
-        puddle_on, lake_on = water_return(event, puddle_on, lake_on)
+        answer_on = get_question(event, answerList, answer_on, user_text, n)
         charIndex = characterChoose(event, charIndex)
         char = charList[charIndex]
         p1.img = char
