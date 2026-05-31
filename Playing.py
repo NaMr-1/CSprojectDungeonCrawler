@@ -9,7 +9,6 @@ class Player:
     '''
     #the following variables are known as static or class variables
     speedX, speedY = randint(3, 6), randint(1, 4)
-    dig = py.mixer.Sound("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Firework_blast.ogg")
     # bark = py.mixer.Sound()
 
 
@@ -27,42 +26,6 @@ class Player:
     def draw(self, screen):
         # py.draw.rect(screen, "#f8f6f9", self.rect)
         screen.blit(self.img, (self.x, self.y))
-    
-    def move(self, screen, grid, event):
-        r = self.y // 60
-        c = self.x // 60
-        if event.type == py.KEYDOWN:
-            if event.key == py.K_LEFT and c - 1 >= 0 and grid[r][c-1] != 0:
-                self.x -= 60
-                Player.dig.play()
-            if event.key == py.K_RIGHT and c + 1 < len(grid[0]) and grid[r][c+1] != 0:
-                self.x += 60
-                Player.dig.play()
-            if event.key == py.K_UP and r - 1 >= 0 and grid[r-1][c] != 0:
-                self.y -= 60
-                Player.dig.play()
-            if event.key == py.K_DOWN and r + 1 < len(grid) and grid[r+1][c] != 0:
-                self.y += 60
-                Player.dig.play()
-            '''
-            if event.key == py.K_SPACE and grid[r][c] == 2:
-                grid[r][c] = 1
-                Player.coin += 1
-            '''
-            
-        '''
-        keys = py.key.get_pressed() #checks of a key is pressed
-        if keys[py.K_a] and self.x > 0:
-            self.x -= Player.speedX
-        if keys[py.K_d] and self.x < 600 - self.w:
-            self.x += Player.speedX
-        if keys[py.K_w] and self.y > 0:
-            self.y -= Player.speedY
-        if keys[py.K_s] and self.y < 600 - self.h:
-            self.y += Player.speedY
-        #once the (x,y) are updated then we must update rect object
-        self.rect = (self.x, self.y, self.w, self.h)
-        '''
         
     def mine(self, screen, grid, event, mined):
         r = self.y // 60
