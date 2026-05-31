@@ -69,19 +69,19 @@ class Player:
         c = self.x // 60
         mined = False
         if event.type == py.KEYDOWN:
-            if event.key == py.K_a and grid[r][c-1] == 0:
+            if event.key == py.K_a and grid[r][c-1] == 0 and c - 1 >= 0:
                 grid[r][c-1] = 10
                 Player.dig.play()
                 mined = True
-            elif event.key == py.K_d and grid[r][c+1] == 0:
+            elif event.key == py.K_d and grid[r][c+1] == 0 and c + 1 < len(grid[0]):
                 grid[r][c+1] = 10
                 Player.dig.play()
                 mined = True
-            elif event.key == py.K_w and grid[r-1][c] == 0:
+            elif event.key == py.K_w and grid[r-1][c] == 0 and r - 1 >= 0:
                 grid[r-1][c] = 10
                 Player.dig.play()
                 mined = True
-            elif event.key == py.K_s and grid[r+1][c] == 0:
+            elif event.key == py.K_s and grid[r+1][c] == 0 and r + 1 < len(grid):
                 grid[r+1][c] = 10
                 Player.dig.play()
                 mined = True
