@@ -6,12 +6,13 @@ py.mixer.init()
 #portal img: https://publicdomainvectors.org/en/free-clipart/Pixel-orange-gem/40472.html
 #crystal img: https://publicdomainvectors.org/en/free-clipart/Blue-rock/40875.html
 #bg1 img : https://media.easy-peasy.ai/92095ba3-b100-486f-81bb-376973e32d8c/d204c906-1a2b-4078-8cc5-c5ed74cf48af.
-#bg2 img: 
 #pix1 img: https://publicdomainvectors.org/en/free-clipart/Vector-illustration-of-colorful-blurry-pixel-character/29224.html
 #pix2 img: https://publicdomainvectors.org/en/free-clipart/Colorful-blurry-pixel-kid-vector-drawing/29223.html
 #dig sound: https://minecraft.fandom.com/wiki/Category:Armor_stand_sounds
 #gem sound: https://minecraft.fandom.com/wiki/Category:Firework_sounds
 #portal sound: https://minecraft.fandom.com/wiki/Category:Boat_sounds
+#cat img: https://publicdomainvectors.org/en/free-clipart/Cat-vector-illustration/37579.html
+#hotdog img: https://publicdomainvectors.org/en/free-clipart/Hot-dog-vector-image/10696.html
  
 #in this script we will generate n x n grid on the screen
 #our player can only move within these cells in the grid
@@ -21,20 +22,15 @@ screen_w, screen_h = col * cell_w, row*cell_h
 panel_w = 3*cell_w
 total_w = screen_w + panel_w
 nines = 0
-digs = 0
 minus = 0
 gems_all = 0
-gem_total = 0
 index = 0
 answer_on = 0
 question_on = 0
-user_text = ""
-n = 0
+
 
 questionList = ["How many planets are there in our solar system?", "Hom many days does a week have?"]
 answerList = ["8", "7"]
-
-mined = False
 
 #generating random value of 0 and 1 in the grid list
 #which decides where we draw obstacles
@@ -68,6 +64,10 @@ dirt = py.image.load("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodP
 dirt = py.transform.scale(dirt, (60, 60))
 laptop = py.image.load("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\Laptop.svg")
 laptop = py.transform.scale(laptop, (60, 60))
+catNPC = py.image.load("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\CatNPC.svg")
+catNPC = py.transform.scale(catNPC, (60, 60)
+hotdog = py.image.load("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\Hotdog.svg")
+hotdog = py.transform.scale(hotdog, (60, 60)
 dig = py.mixer.Sound("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\Firework_blast.ogg")
 gem_sound = py.mixer.Sound("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\Armor_Stand_break1.ogg")
 portal_sound = py.mixer.Sound("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\Boat_paddle_water3.ogg")
@@ -96,20 +96,22 @@ def gridChange():
     grid = [[randint(0, 7) for _ in range(col)] for _ in range(row)]
 
     # ensure starting area is free
-    grid[0][0], grid[0][1], grid[1][0], grid[8][8]= 1, 1, 1, 13
+    grid[0][0], grid[0][1], grid[1][0] = 1, 1, 1
 
-    obstacleList = []
+   
     for r in range(row):
         for c in range(col):
-            if grid[r][c] == 0:
-                obstacleList.append(Obstacle(c * cell_w, r * cell_h, stones))
-            elif grid[r][c] == 3:
+            if grid[r][c] == 3:
                 grid[r][c] = 9
             elif grid[r][c] == 4:
                 grid[r][c] = 11
-    return grid, obstacleList
+            elif grid[r][c] == 5:
+                grid[r][c] = 15
+            elif grid[r][c] == 6:
+                grid[r][c] = 16
+    return grid
 
-grid, obstacleList = gridChange()
+grid = gridChange()
             
 def nineIs(nines):
     nines = 0
@@ -135,16 +137,14 @@ for r in range(row):
 
 
 
-def drawGrid(grid:list[list], obstacleList):
+def drawGrid(grid:list[list] ):
     index_obstacle = 0
     #index_coin = 0
     for r in range(row):
         for c in range(col):
             if grid[r][c] == 0:
-                # py.draw.rect(screen,"#000000", (cell_w*c, cell_h*r, cell_w, cell_h))
-                obstacleList[index_obstacle].draw(screen)
-                index_obstacle += 1
-            
+                screen.blit(stones, (c*cell_w, r*cell_h)
+             
             elif grid[r][c] == 9:
                 screen.blit(gems, (c*cell_w, r*cell_h))
 
@@ -156,6 +156,13 @@ def drawGrid(grid:list[list], obstacleList):
 
             elif grid[r][c] == 11:
                 screen.blit(laptop, (c*cell_w, r*cell_h))
+
+            elif grid[r][c] == 15:
+                screen.blit(catNPC, (c*cell_w, r*cell_h))
+
+            elif grid[r][c] == 16:
+                screen.blit(hotdog, (c*cell_w, r*cell_h))
+             
             
             '''
             if grid[r][c] == 2:
@@ -194,13 +201,13 @@ def drawTitleScreen(screen):
     screen.blit(titleText, (170, 100))
     screen.blit(contText, (160, 200))
 
-def drawEndScreen(screen, gem_total, question_on):
+def drawEndScreen(screen, gems_all, question_on, minus):
     py.draw.rect(screen, "#222255", (0, 0, total_w, screen_h))
     sans_font = py.font.SysFont("dejavusans", 30)
     endText = sans_font.render(f"The End", True, "#cccccc")
-    gemText = sans_font.render(f"You collected {gem_total} crystals", True, "#cccccc")
+    gemText = sans_font.render(f"You collected {gems_all} crystals", True, "#cccccc")
     jumpText = sans_font.render(f"You answered {question_on} questions correctly", True, "#cccccc")
-    scoreText = sans_font.render(f"Your total score is: {gem_total + question_on}", True, "#cccccc")
+    scoreText = sans_font.render(f"Your total score is: {gems_all + question_on - minus}", True, "#cccccc")
 
 
     screen.blit(endText, (170, 90))
@@ -208,30 +215,11 @@ def drawEndScreen(screen, gem_total, question_on):
     screen.blit(jumpText, (140, 170))
     screen.blit(scoreText, (120, 210))
 
-def drawQuestionScreen(screen, questionList, event):
-    py.draw.rect(screen, "#222255", (total_w, 0, 360, 360))
-    sans_font = py.font.SysFont("dejavusans", 20)
-    n = randint(0, len(questionList)-1)
-    questionText = sans_font.render(f"{questionList[n]}", True, "#cccccc")
-    user_text = ""
-    if event.type == py.KEYDOWN:
-        if event.key == py.K_BACKSPACE:
-            user_text = user_text[:-1]
-        else:
-            user_text += event.unicode
-    submitAnsText = sans_font.render(f"Answer submitted: {user_text}", True, "#cccccc")
-    if event.type == py.KEYDOWN:
-        if event.key == py.K_RETURN:
-            screen.blit(submitAnsText, (35, 10))
-    screen.blit(questionText, (10, 10))
-    return user_text, n
-
-
 portal_passes = 0
-def draw_panel(screen, gem_total, portal_passes, digs):
+def draw_panel(screen, gems_all, portal_passes):
     font = py.font.SysFont(None, 30)
     py.draw.rect(screen, "#333333", (screen_w, 0, panel_w, screen_h))
-    textSurface1 = font.render(f"Gems: {gem_total}", True, "#cccccc")
+    textSurface1 = font.render(f"Gems: {gems_all}", True, "#cccccc")
     textSurface2 = font.render(f"Portals: {portal_passes}", True, "#cccccc")
     screen.blit(textSurface1, (screen_w + 20, 40))
     screen.blit(textSurface2, (screen_w + 20, 65))
@@ -246,27 +234,82 @@ def find(event, gems_all):
             gem_sound.play()
     return gems_all
 
-def get_question(event, answerList, answer_on, user_text, n):
+def get_question(event, questionList, answerList, answer_on):
     r = p1.y // 60
     c = p1.x // 60
+    n = randint(0, len(questionList)-1)
     if event.type == py.KEYDOWN:
         if event.key == py.K_SPACE and grid[r][c] == 11:
-            drawQuestionScreen(screen, questionList, event)
-            user_text, n = drawQuestionScreen(screen, questionList, event)
-            if user_text == answerList[n]:
-                grid[r][c] = 4
-                gem_sound.play()
-                answer_on += 1
+            user_text = input(questionList[n])
+    if user_text == answerList[n]:
+        grid[r][c] = 4
+        gem_sound.play()
+        answer_on += 1
     return answer_on
 
 
-def digging(mined, digs, minus):
-    if mined == True:
-        digs += 1
-        minus += 2
-        mined = False
-    return digs, minus
+def digging(grid, event, minus):
+   r = p1.y // cell_h
+   c = p1.x // cell_w
+ 
+   if event.type == py.KEYDOWN:
+        if event.key == py.K_a and grid[r][c-1] == 0 and c - 1 >= 0:
+            grid[r][c-1] = 10
+            minus +=2
+            dig.play()
+        elif event.key == py.K_d and grid[r][c+1] == 0 and c + 1 < len(grid[0]):
+            grid[r][c+1] = 10
+            minus += 2
+            dig.play()
+        elif event.key == py.K_w and grid[r-1][c] == 0 and r - 1 >= 0:
+            grid[r-1][c] = 10
+            minus += 2
+            dig.play()
+        elif event.key == py.K_s and grid[r+1][c] == 0 and r + 1 < len(grid):
+            grid[r+1][c] = 10
+            minus += 2
+            dig.play()
+    return grid, minus
 
+def catChoice(event, grid, minus, gems_all):
+        q = radint(0,2)
+        r = p1.y // cell_h
+        c = p1.x // cell_w
+        if event.type == py.KEYDOWN:
+            if event.key == py.K_SPACE and grid[r][c] == 15:
+                 if q == 0:
+                     print("The cat scratched you.")
+                     minus += 3
+                     grid[r][c] = 5
+                     gem_sound.play()
+                 elif q == 1:
+                     print("The cat hid from you.")
+                     grid[r][c] = 5
+                     gem_sound.play()
+                 elif q == 2:
+                     print("The cat gave you gems!")
+                     gems_all += 3
+                     grid[r][c] = 5
+                     gem_sound.play()
+        return grid, minus, gems_all   
+            
+def isHotdog(event, grid, minus, gems_all):
+        r = p1.y // cell_h
+        c = p1.x // cell_w
+        if event.type == py.KEYDOWN:
+            if event.key == py.K_SPACE and grid[r][c] == 16:
+                 o = input("Am I a sandwich? yes or no: ")
+        if o == "no":
+            print("You got it right! Have some gems.")
+            gems_all += 5
+            grid[r][c] = 6
+            gem_sound.play()
+        else:
+            print("What are you talking about!? Minus points!")
+            minus += 5
+            grid[r][c] = 4
+            gem_sound.play()
+        return grid, minus, gems_all    
 
 def check(nines, answer_on):
     if nines == 0 and answer_on > 0:
@@ -290,10 +333,6 @@ def portalCheck(event, portal_passes, grid, obstacleList, index, answer_on, ques
                 index -= 4
 
     return portal_passes, grid, obstacleList, index, answer_on, question_on
-
-def gemCount(gems_all, minus, gem_total):
-    gem_total = gems_all - minus
-    return gem_total
             
             
 start = True
@@ -331,14 +370,14 @@ while run:
         if event.type == py.QUIT:
             run = False
         p1.move(screen, grid, event)
-        digs, minus = digging(mined, digs, minus)
+        grid, minus = digging(grid, event, minus)
+        grid, minus, gems_all = catChoice(event, grid, minus, gems_all)
+        grid, minus, gems_all = isHotdog(event, grid, minus, gems_all)
         nines = nineIs(nines)
         check(nines, answer_on)
         portal_passes, grid, obstacleList, index, answer_on, question_on = portalCheck(event, portal_passes, grid, obstacleList, index ,answer_on, question_on)
-        grid, mined = p1.mine(screen, grid, event, mined)
-        gem_total = gemCount(gems_all, minus, gem_total)
         gems_all = find(event, gems_all)
-        answer_on = get_question(event, answerList, answer_on, user_text, n)
+        answer_on = get_question(event, questionList, answerList, answer_on)
         charIndex = characterChoose(event, charIndex)
         char = charList[charIndex]
         p1.img = char
@@ -351,7 +390,7 @@ while run:
     screen.blit(bgList[index], (0,0))
     #first draw the grid
     drawGrid(grid, obstacleList)
-    draw_panel(screen, gem_total, portal_passes, digs)
+    draw_panel(screen, gems_all, portal_passes)
     #then draw the player
     p1.draw(screen)
     #then move the player
@@ -372,6 +411,6 @@ while ending:
         if event.type == py.KEYDOWN:
             if event.key == py.K_RETURN:
                 ending = False
-    drawEndScreen(screen, gem_total, digs)
+    drawEndScreen(screen, gems_all, question_on, minus)
     py.display.flip()
 py.quit()
