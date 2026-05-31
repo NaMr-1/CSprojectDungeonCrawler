@@ -208,23 +208,21 @@ def drawEndScreen(screen, gem_total, question_on):
     screen.blit(jumpText, (140, 170))
     screen.blit(scoreText, (120, 210))
 
-def drawQuestionScreen(screencreen, questionList, event):
+def drawQuestionScreen(screen, questionList, event):
     py.draw.rect(screen, "#222255", (total_w, 0, 360, 360))
     sans_font = py.font.SysFont("dejavusans", 20)
     n = randint(0, len(questionList)-1)
     questionText = sans_font.render(f"{questionList[n]}", True, "#cccccc")
     user_text = ""
-    for event in py.event.get():
-        if event.type == py.KEYDOWN:
-            if event.key == py.K_BACKSPACE:
-                user_text = user_text[:-1]
-            else:
-                user_text += event.unicode
+    if event.type == py.KEYDOWN:
+        if event.key == py.K_BACKSPACE:
+            user_text = user_text[:-1]
+        else:
+            user_text += event.unicode
     submitAnsText = sans_font.render(f"Answer submitted: {user_text}", True, "#cccccc")
-    for event in py.event.get():
-        if event.type == py.KEYDOWN:
-            if event.key == py.K_RETURN:
-                screen.blit(submitAnsText, (35, 10))
+    if event.type == py.KEYDOWN:
+        if event.key == py.K_RETURN:
+            screen.blit(submitAnsText, (35, 10))
     screen.blit(questionText, (10, 10))
     return user_text, n
 
@@ -327,13 +325,12 @@ while intro:
     drawInstructions(screen)
     py.display.flip()
 
-
+bg_sound.play(-1)
 while run:
     for event in py.event.get():
         if event.type == py.QUIT:
             run = False
         p1.move(screen, grid, event)
-        p1.mine(screen, grid, event, mined)
         digs, minus = digging(mined, digs, minus)
         nines = nineIs(nines)
         check(nines, answer_on)
@@ -355,7 +352,6 @@ while run:
     #first draw the grid
     drawGrid(grid, obstacleList)
     draw_panel(screen, gem_total, portal_passes, digs)
-    bg_sound.play()
     #then draw the player
     p1.draw(screen)
     #then move the player
