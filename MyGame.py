@@ -143,7 +143,7 @@ def drawGrid(grid:list[list] ):
     for r in range(row):
         for c in range(col):
             if grid[r][c] == 0:
-                screen.blit(stones, (c*cell_w, r*cell_h)
+                screen.blit(stones, (c*cell_w, r*cell_h))
              
             elif grid[r][c] == 9:
                 screen.blit(gems, (c*cell_w, r*cell_h))
@@ -249,10 +249,10 @@ def get_question(event, questionList, answerList, answer_on):
 
 
 def digging(grid, event, minus):
-   r = p1.y // cell_h
-   c = p1.x // cell_w
+    r = p1.y // cell_h
+    c = p1.x // cell_w
  
-   if event.type == py.KEYDOWN:
+    if event.type == py.KEYDOWN:
         if event.key == py.K_a and grid[r][c-1] == 0 and c - 1 >= 0:
             grid[r][c-1] = 10
             minus +=2
@@ -272,7 +272,7 @@ def digging(grid, event, minus):
     return grid, minus
 
 def catChoice(event, grid, minus, gems_all):
-        q = radint(0,2)
+        q = randint(0,2)
         r = p1.y // cell_h
         c = p1.x // cell_w
         if event.type == py.KEYDOWN:
