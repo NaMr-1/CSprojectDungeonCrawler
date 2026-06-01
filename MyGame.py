@@ -137,7 +137,7 @@ for r in range(row):
 
 
 
-def drawGrid(grid:list[list] ):
+def drawGrid(grid:list[list]):
     index_obstacle = 0
     #index_coin = 0
     for r in range(row):
@@ -389,7 +389,7 @@ while run:
     # screen.fill("#ffffff")
     screen.blit(bgList[index], (0,0))
     #first draw the grid
-    drawGrid(grid, obstacleList)
+    drawGrid(grid)
     draw_panel(screen, gems_all, portal_passes)
     #then draw the player
     p1.draw(screen)
