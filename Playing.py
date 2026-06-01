@@ -23,6 +23,8 @@ class Player:
         self.collide = False
         self.img = img
     
+    dig = py.mixer.Sound("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Gra\\CSprojectDungeonCrawler\\Firework_blast.ogg")
+    
     def draw(self, screen):
         # py.draw.rect(screen, "#f8f6f9", self.rect)
         screen.blit(self.img, (self.x, self.y))

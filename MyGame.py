@@ -206,14 +206,16 @@ def drawEndScreen(screen, gems_all, question_on, minus):
     sans_font = py.font.SysFont("dejavusans", 30)
     endText = sans_font.render(f"The End", True, "#cccccc")
     gemText = sans_font.render(f"You collected {gems_all} crystals", True, "#cccccc")
+    minusText = sans_font.render(f"You got {minus} minus points", True, "#cccccc")
     jumpText = sans_font.render(f"You answered {question_on} questions correctly", True, "#cccccc")
     scoreText = sans_font.render(f"Your total score is: {gems_all + question_on - minus}", True, "#cccccc")
 
 
     screen.blit(endText, (170, 90))
     screen.blit(gemText, (140, 130))
-    screen.blit(jumpText, (140, 170))
-    screen.blit(scoreText, (120, 210))
+    screen.blit(minusText, (140, 170))
+    screen.blit(jumpText, (140, 210))
+    screen.blit(scoreText, (120, 250))
 
 portal_passes = 0
 def draw_panel(screen, gems_all, portal_passes):
@@ -235,16 +237,24 @@ def find(event, gems_all):
     return gems_all
 
 def get_question(event, questionList, answerList, answer_on):
+    textIs = False
     r = p1.y // 60
     c = p1.x // 60
+    user_text = ""
     n = randint(0, len(questionList)-1)
     if event.type == py.KEYDOWN:
         if event.key == py.K_SPACE and grid[r][c] == 11:
             user_text = input(questionList[n])
-    if user_text == answerList[n]:
+            textIs = True
+    if user_text == answerList[n] and textIs == True:
         grid[r][c] = 4
         gem_sound.play()
         answer_on += 1
+        textIs = False
+    elif user_text != answerList[n] and textIs == True:
+        grid[r][c] = 4
+        gem_sound.play()
+        textIs = False
     return answer_on
 
 
@@ -272,44 +282,49 @@ def digging(grid, event, minus):
     return grid, minus
 
 def catChoice(event, grid, minus, gems_all):
-        q = randint(0,2)
-        r = p1.y // cell_h
-        c = p1.x // cell_w
-        if event.type == py.KEYDOWN:
-            if event.key == py.K_SPACE and grid[r][c] == 15:
-                 if q == 0:
-                     print("The cat scratched you.")
-                     minus += 3
-                     grid[r][c] = 5
-                     gem_sound.play()
-                 elif q == 1:
-                     print("The cat hid from you.")
-                     grid[r][c] = 5
-                     gem_sound.play()
-                 elif q == 2:
-                     print("The cat gave you gems!")
-                     gems_all += 3
-                     grid[r][c] = 5
-                     gem_sound.play()
-        return grid, minus, gems_all   
+    q = randint(0,2)
+    r = p1.y // cell_h
+    c = p1.x // cell_w
+    if event.type == py.KEYDOWN:
+        if event.key == py.K_SPACE and grid[r][c] == 15:    
+            if q == 0:
+                print("The cat scratched you.")
+                minus += 3
+                grid[r][c] = 5
+                gem_sound.play()
+            elif q == 1:
+                print("The cat hid from you.")
+                grid[r][c] = 5
+                gem_sound.play()
+            elif q == 2:
+                print("The cat gave you gems!")
+                gems_all += 3
+                grid[r][c] = 5
+                gem_sound.play()
+    return grid, minus, gems_all   
             
 def isHotdog(event, grid, minus, gems_all):
-        r = p1.y // cell_h
-        c = p1.x // cell_w
-        if event.type == py.KEYDOWN:
-            if event.key == py.K_SPACE and grid[r][c] == 16:
-                 o = input("Am I a sandwich? yes or no: ")
-        if o == "no":
-            print("You got it right! Have some gems.")
-            gems_all += 5
-            grid[r][c] = 6
-            gem_sound.play()
-        else:
-            print("What are you talking about!? Minus points!")
-            minus += 5
-            grid[r][c] = 4
-            gem_sound.play()
-        return grid, minus, gems_all    
+    hotdogIs = False
+    hotdog_text = ""
+    r = p1.y // cell_h
+    c = p1.x // cell_w
+    if event.type == py.KEYDOWN:
+        if event.key == py.K_SPACE and grid[r][c] == 16:
+            hotdog_text = input("Am I a sandwich? yes or no: ")
+            hotdogIs = True
+    if hotdog_text == "no" and hotdogIs == True:
+        print("You got it right! Have some gems.")
+        gems_all += 5
+        grid[r][c] = 6
+        hotdogIs = False
+        gem_sound.play()
+    elif hotdog_text != "no" and hotdogIs == True:
+        print("What are you talking about!? Minus points!")
+        minus += 5
+        grid[r][c] = 4
+        hotdogIs = False
+        gem_sound.play()
+    return grid, minus, gems_all    
 
 def check(nines, answer_on):
     if nines == 0 and answer_on > 0:
@@ -324,7 +339,7 @@ def portalCheck(event, portal_passes, grid, index, answer_on, question_on):
     if event.type == py.KEYDOWN:
         if event.key == py.K_SPACE and grid[r][c] == 8:
             portal_sound.play()
-            grid, obstacleList = gridChange()
+            grid = gridChange()
             question_on += answer_on
             answer_on = 0
             portal_passes += 1
