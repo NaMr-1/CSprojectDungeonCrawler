@@ -9,7 +9,6 @@ class Player:
     '''
     #the following variables are known as static or class variables
     speedX, speedY = randint(3, 6), randint(1, 4)
-    dig = py.mixer.Sound("C:\\Users\\06Solec\\Documents\\NataliaM\\GameProject\\kodPana\\Firework_blast.ogg")
     # bark = py.mixer.Sound()
 
 
@@ -63,29 +62,7 @@ class Player:
         #once the (x,y) are updated then we must update rect object
         self.rect = (self.x, self.y, self.w, self.h)
         '''
-        
-    def mine(self, screen, grid, event, mined):
-        r = self.y // 60
-        c = self.x // 60
-        mined = False
-        if event.type == py.KEYDOWN:
-            if event.key == py.K_a and grid[r][c-1] == 0:
-                grid[r][c-1] = 10
-                Player.dig.play()
-                mined = True
-            elif event.key == py.K_d and grid[r][c+1] == 0:
-                grid[r][c+1] = 10
-                Player.dig.play()
-                mined = True
-            elif event.key == py.K_w and grid[r-1][c] == 0:
-                grid[r-1][c] = 10
-                Player.dig.play()
-                mined = True
-            elif event.key == py.K_s and grid[r+1][c] == 0:
-                grid[r+1][c] = 10
-                Player.dig.play()
-                mined = True
-        return grid, mined
+    
 
 
     def collision(self,enemy):
